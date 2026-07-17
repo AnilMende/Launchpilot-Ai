@@ -2,7 +2,7 @@ import express from "express";
 
 import { validate } from "../middleware/validate.middleware.js";
 import { loginSchema, registerSchema } from "../validators/auth.validator.js";
-import { getProfile, login, logout, register } from "../controllers/auth.controller.js";
+import { getCurrentUser, login, logout, refreshAccessToken, register } from "../controllers/auth.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 
 const authRouter = express.Router();
@@ -13,6 +13,8 @@ authRouter.post("/login", validate(loginSchema), login);
 
 authRouter.post("/logout", logout);
 
-authRouter.get("/profile", authenticate, getProfile);
+authRouter.get("/me", authenticate, getCurrentUser);
+
+authRouter.post("/refresh-token", refreshAccessToken);
 
 export default authRouter;
