@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import authRouter from "./routes/auth.routes.js";
+import topicRouter from "./routes/topic.routes.js";
 
 const app = express();
 
@@ -33,6 +34,8 @@ app.get("/api-test", (req, res) => {
 
 // api endpoints
 app.use("/api/auth", authRouter);
+
+app.use("/api/topics", topicRouter);
 
 
 app.use(errorHandler);
