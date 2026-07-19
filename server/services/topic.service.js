@@ -1,6 +1,8 @@
 import { Topic } from "../models/topicModel.js"
 import { ApiError } from "../utils/ApiError.js";
 import generateSlug from "../utils/generateSlug.js";
+import getPagination from "../utils/pagination.js";
+import { applySearch } from "../utils/apiFeatures.js";
 
 
 const createTopicService = async ({ data, user }) => {
@@ -34,68 +36,41 @@ const createTopicService = async ({ data, user }) => {
 
 }
 
-// get all topics
+
+// Get All Topics
 const getAllTopicService = async (query) => {
 
-    const page = Number(query.page) || 1;
-
-    const limit = Number(query.limit) || 10;
-
-    const search = query.search || "";
+    const { page, limit, skip } = getPagination(query);
 
     const sort = query.sort || "displayOrder";
 
     const filter = {};
 
-    if (search) {
-
-        filter.$or = [
-
-            {
-                title: {
-                    $regex: search,
-                    $options: "i"
-                }
-            },
-
-            {
-                description: {
-                    $regex: search,
-                    $options: "i"
-                }
-            }
-
-        ];
-
-    }
+    applySearch(
+        filter,
+        query.search,
+        ["title", "description"]
+    );
 
     const totalTopics = await Topic.countDocuments(filter);
 
     const topics = await Topic.find(filter)
         .populate("createdBy", "name email")
         .sort(sort)
-        .skip((page - 1) * limit)
+        .skip(skip)
         .limit(limit);
 
     return {
-
         topics,
-
         pagination: {
-
             totalTopics,
-
             currentPage: page,
-
             totalPages: Math.ceil(totalTopics / limit),
-
             limit
-
         }
-
     };
-
-}
+    
+};
 
 // get topics by slug
 const getTopicBySlugService = async (slug) => {

@@ -8,6 +8,7 @@ import connectDB from "./config/db.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import authRouter from "./routes/auth.routes.js";
 import topicRouter from "./routes/topic.routes.js";
+import articleRouter from "./routes/article.routes.js";
 
 const app = express();
 
@@ -36,6 +37,8 @@ app.get("/api-test", (req, res) => {
 app.use("/api/auth", authRouter);
 
 app.use("/api/topics", topicRouter);
+
+app.use("/api/articles", articleRouter);
 
 
 app.use(errorHandler);
