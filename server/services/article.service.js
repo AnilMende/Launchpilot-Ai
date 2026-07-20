@@ -235,10 +235,25 @@ const deleteArticleService = async (articleId) => {
 
 };
 
+// Get Featured Articles
+const getFeaturedArticlesService = async () => {
+
+    const articles = await Article.find({
+        isFeatured: true,
+        status: "published"
+    })
+        .populate("topic", "title slug")
+        .populate("createdBy", "name email")
+        .sort("-publishedAt");
+
+    return articles;
+}
+
 export {
     createArticleService,
     getAllArticlesService,
     getArticleBySlugService,
     updateArticleService,
-    deleteArticleService
+    deleteArticleService,
+    getFeaturedArticlesService
 };

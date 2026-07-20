@@ -5,6 +5,7 @@ import { ARTICLE_MESSAGES } from "../utils/responseMessages.js";
 import {
     createArticleService, deleteArticleService,
     getAllArticlesService, getArticleBySlugService,
+    getFeaturedArticlesService,
     updateArticleService
 } from "../services/article.service.js";
 import { ARTICLE_STATUS } from "../utils/constants.js";
@@ -91,4 +92,20 @@ const deleteArticle = asyncHandler(async (req, res) => {
 
 })
 
-export { createArticle, getAllArticles, getArticleBySlug, updateArticle, deleteArticle };
+// get featured articles
+const getFeaturedArticles = asyncHandler(async (req, res) => {
+
+    const articles = await getFeaturedArticlesService();
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { articles },
+            "Featured articles fetched successfully"
+        )
+    )
+})
+
+export { createArticle, getAllArticles, getArticleBySlug, updateArticle, deleteArticle,
+    getFeaturedArticles
+ };
