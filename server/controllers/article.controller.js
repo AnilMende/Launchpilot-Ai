@@ -7,6 +7,7 @@ import {
     getAllArticlesService, getArticleBySlugService,
     getArticlesByTopicService,
     getFeaturedArticlesService,
+    getRelatedArticlesService,
     updateArticleService
 } from "../services/article.service.js";
 import { ARTICLE_STATUS } from "../utils/constants.js";
@@ -125,7 +126,22 @@ const getArticlesByTopic = asyncHandler(async (req, res) => {
 
 })
 
+// Get Related Artilces
+const getRelatedArticles = asyncHandler(async (req, res) => {
+
+    const result = await getRelatedArticlesService(req.params.slug);
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            result,
+            "Related articles fetched successfully"
+        )
+    );
+
+})
+
 export {
     createArticle, getAllArticles, getArticleBySlug, updateArticle, deleteArticle,
-    getFeaturedArticles, getArticlesByTopic
+    getFeaturedArticles, getArticlesByTopic, getRelatedArticles
 };

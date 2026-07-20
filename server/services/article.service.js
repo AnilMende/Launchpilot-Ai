@@ -297,6 +297,42 @@ const getArticlesByTopicService = async (topicSlug, query) => {
 
 };
 
+// Get Related Articles
+const getRelatedArticlesService = async (slug) => {
+
+    // find current article
+    const article = await Article.findOne({
+        slug,
+        status: "published"
+    });
+
+    if (!article) {
+        throw new ApiError(404, "Article not found");
+    }
+
+    // find related articles
+    const relatedArticles = await Article.find({
+        topic: article.topic,
+        status: "published",
+        _id: {
+            $ne: article._id
+        }
+    })
+        .populate("topic", "title slug")
+        .populate("createdBy", "name email")
+        .sort("-publishedAt")
+        .limit(4)
+
+    return {
+        currentArticle: {
+            title: article.title,
+            slug: article.slug
+        },
+        relatedArticles
+    };
+
+}
+
 export {
     createArticleService,
     getAllArticlesService,
@@ -304,5 +340,6 @@ export {
     updateArticleService,
     deleteArticleService,
     getFeaturedArticlesService,
-    getArticlesByTopicService
+    getArticlesByTopicService,
+    getRelatedArticlesService
 };
