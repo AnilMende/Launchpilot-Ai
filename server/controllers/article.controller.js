@@ -5,6 +5,7 @@ import { ARTICLE_MESSAGES } from "../utils/responseMessages.js";
 import {
     createArticleService, deleteArticleService,
     getAllArticlesService, getArticleBySlugService,
+    getArticlesByTopicService,
     getFeaturedArticlesService,
     updateArticleService
 } from "../services/article.service.js";
@@ -106,6 +107,25 @@ const getFeaturedArticles = asyncHandler(async (req, res) => {
     )
 })
 
-export { createArticle, getAllArticles, getArticleBySlug, updateArticle, deleteArticle,
-    getFeaturedArticles
- };
+// get articles by topic
+const getArticlesByTopic = asyncHandler(async (req, res) => {
+
+    const result = await getArticlesByTopicService(
+        req.params.topicSlug,
+        req.query
+    );
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            result,
+            "Articles fetched successfully"
+        )
+    );
+
+})
+
+export {
+    createArticle, getAllArticles, getArticleBySlug, updateArticle, deleteArticle,
+    getFeaturedArticles, getArticlesByTopic
+};

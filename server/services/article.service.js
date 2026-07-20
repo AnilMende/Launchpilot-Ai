@@ -249,11 +249,60 @@ const getFeaturedArticlesService = async () => {
     return articles;
 }
 
+// Get Articles by topic slug
+const getArticlesByTopicService = async (topicSlug, query) => {
+
+    // find topic using slug
+    const topic = await Topic.findOne({
+        slug: topicSlug
+    });
+
+    if (!topic) {
+        throw new ApiError(404, "Topic not found");
+    }
+
+    const { page, limit, skip } = getPagination(query);
+
+    const filter = {
+        topic: topic._id,
+        status: "published"
+    };
+
+    applySearch(
+        filter,
+        query.search,
+        ["title", "summary", "content"]
+    );
+
+    const totalArticles = await Article.countDocuments(filter);
+
+    const articles = await Article.find(filter)
+        .populate("topic", "title slug")
+        .populate("createdBy", "name email")
+        .sort(query.sort || "-publishedAt")
+        .skip(skip)
+        .limit(limit);
+
+    return {
+
+        topic,
+        articles,
+        pagination: {
+            totalArticles,
+            currentPage: page,
+            totalPages: Math.ceil(totalArticles / limit),
+            limit
+        }
+    };
+
+};
+
 export {
     createArticleService,
     getAllArticlesService,
     getArticleBySlugService,
     updateArticleService,
     deleteArticleService,
-    getFeaturedArticlesService
+    getFeaturedArticlesService,
+    getArticlesByTopicService
 };

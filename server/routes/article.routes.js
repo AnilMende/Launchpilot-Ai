@@ -2,6 +2,7 @@ import express from "express";
 import {
     createArticle, deleteArticle,
     getAllArticles, getArticleBySlug,
+    getArticlesByTopic,
     getFeaturedArticles,
     updateArticle
 } from "../controllers/article.controller.js";
@@ -22,6 +23,9 @@ articleRouter.get("/", getAllArticles);
 
 // get featured articles
 articleRouter.get("/featured", getFeaturedArticles);
+
+// get article by topic slug
+articleRouter.get("/topic/:topicSlug", getArticlesByTopic);
 
 // Get article by slug
 articleRouter.get("/:slug", getArticleBySlug);
