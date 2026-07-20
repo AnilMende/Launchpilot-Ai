@@ -25,7 +25,13 @@ const createArticleService = async (data, user) => {
         seoDescription
     } = data;
 
-    const existingArticle = await Article.findOne({ title });
+    const existingArticle = await Article.findOne({
+
+        title,
+
+        isDeleted: false
+
+    });
 
     if (existingArticle) {
         throw new ApiError(409, "Article already exists");
@@ -86,7 +92,10 @@ const getAllArticlesService = async (query) => {
 
     const { page, limit, skip } = getPagination(query);
 
-    const filter = {};
+    const filter = {
+        status: "published",
+        isDeleted: false
+    };
 
     applySearch(
         filter,
@@ -139,13 +148,30 @@ const getAllArticlesService = async (query) => {
 // Get Article By Slug
 const getArticleBySlugService = async (slug) => {
 
-    const article = await Article.findOne({
-        slug,
-        status: "published"
-    })
+    const article = await Article.findOneAndUpdate(
 
-        .populate("topic")
+        {
+            slug,
+            status: "published",
+            isDeleted: false
+        },
 
+        {
+            $inc: {
+                views: 1
+            },
+
+            $set: {
+                lastViewedAt: new Date()
+            }
+        },
+
+        {
+            new: true
+        }
+
+    )
+        .populate("topic", "title slug")
         .populate("createdBy", "name email");
 
     if (!article) {
@@ -164,7 +190,10 @@ const updateArticleService = async (
     user
 ) => {
 
-    const article = await Article.findById(articleId);
+    const article = await Article.findOne({
+        _id: articleId,
+        isDeleted: false
+    });
 
     if (!article) {
         throw new ApiError(404, "Article not found");
@@ -182,6 +211,23 @@ const updateArticleService = async (
 
     if (data.title) {
 
+        const existingArticle = await Article.findOne({
+
+            title: data.title,
+
+            _id: { $ne: articleId },
+
+            isDeleted: false
+
+        });
+
+        if (existingArticle) {
+            throw new ApiError(
+                409,
+                "Article title already exists"
+            );
+        }
+
         data.slug = generateSlug(data.title);
 
     }
@@ -190,32 +236,39 @@ const updateArticleService = async (
         article.status !== "published" &&
         data.status === "published"
     ) {
-
         data.publishedAt = new Date();
+    }
+
+    if (data.content) {
+
+        const words = data.content
+            .trim()
+            .split(/\s+/).length;
+
+        data.readingTime = Math.max(
+            1,
+            Math.ceil(words / 200)
+        );
 
     }
 
     data.updatedBy = user._id;
 
-    const updatedArticle =
-        await Article.findByIdAndUpdate(
+    const updatedArticle = await Article.findByIdAndUpdate(
 
-            articleId,
+        articleId,
 
-            data,
+        data,
 
-            {
-                new: true,
-                runValidators: true
-            }
+        {
+            new: true,
+            runValidators: true
+        }
 
-        )
-
-            .populate("topic", "title slug")
-
-            .populate("createdBy", "name email")
-
-            .populate("updatedBy", "name email");
+    )
+        .populate("topic", "title slug")
+        .populate("createdBy", "name email")
+        .populate("updatedBy", "name email");
 
     return updatedArticle;
 
@@ -224,35 +277,50 @@ const updateArticleService = async (
 // Delete Article
 const deleteArticleService = async (articleId) => {
 
-    const article =
-        await Article.findByIdAndDelete(articleId);
+    const article = await Article.findOne({
+
+        _id: articleId,
+
+        isDeleted: false
+
+    });
 
     if (!article) {
         throw new ApiError(404, "Article not found");
     }
+
+    article.isDeleted = true;
+
+    await article.save();
 
     return {};
 
 };
 
 // Get Featured Articles
-const getFeaturedArticlesService = async () => {
+const getFeaturedArticlesService = async (user = null) => {
 
-    const articles = await Article.find({
+    const filter = {
         isFeatured: true,
-        status: "published"
-    })
+        status: "published",
+        isDeleted: false
+    };
+
+    const articles = await Article.find(filter)
         .populate("topic", "title slug")
         .populate("createdBy", "name email")
         .sort("-publishedAt");
 
     return articles;
-}
+};
 
 // Get Articles by topic slug
-const getArticlesByTopicService = async (topicSlug, query) => {
+const getArticlesByTopicService = async (
+    topicSlug,
+    query,
+    user = null
+) => {
 
-    // find topic using slug
     const topic = await Topic.findOne({
         slug: topicSlug
     });
@@ -274,6 +342,10 @@ const getArticlesByTopicService = async (topicSlug, query) => {
         ["title", "summary", "content"]
     );
 
+    if (query.status && isAdmin) {
+        filter.status = query.status;
+    }
+
     const totalArticles = await Article.countDocuments(filter);
 
     const articles = await Article.find(filter)
@@ -286,73 +358,111 @@ const getArticlesByTopicService = async (topicSlug, query) => {
     return {
 
         topic,
+
         articles,
+
         pagination: {
+
             totalArticles,
+
             currentPage: page,
+
             totalPages: Math.ceil(totalArticles / limit),
+
             limit
+
         }
+
     };
 
 };
 
 // Get Related Articles
-const getRelatedArticlesService = async (slug) => {
+const getRelatedArticlesService = async (
+    slug,
+    user = null
+) => {
 
-    // find current article
-    const article = await Article.findOne({
-        slug,
-        status: "published"
-    });
+    const articleFilter = {
+        topic: article.topic,
+        status: "published",
+        isDeleted: false,
+        _id: {
+            $ne: article._id
+        }
+    };
+
+    const article = await Article.findOne(articleFilter);
 
     if (!article) {
         throw new ApiError(404, "Article not found");
     }
 
-    // find related articles
-    const relatedArticles = await Article.find({
+    const relatedFilter = {
         topic: article.topic,
-        status: "published",
         _id: {
             $ne: article._id
         }
-    })
+    };
+
+    const relatedArticles = await Article.find(relatedFilter)
         .populate("topic", "title slug")
         .populate("createdBy", "name email")
         .sort("-publishedAt")
-        .limit(4)
+        .limit(4);
 
     return {
+
         currentArticle: {
+
             title: article.title,
+
             slug: article.slug
+
         },
+
         relatedArticles
+
     };
 
-}
+};
 
 // Get Recent Articles
-// Get Recent Articles
-const getRecentArticlesService = async (query) => {
+const getRecentArticlesService = async (query, user = null) => {
 
     const limit = Number(query.limit) || 5;
 
+    const filter = {
+        status: "published",
+        isDeleted: false
+    };
+
+    const articles = await Article.find(filter)
+        .select("title slug summary featuredImage readingTime publishedAt status")
+        .populate("topic", "title slug")
+        .populate("createdBy", "name email")
+        .sort("-publishedAt")
+        .limit(limit);
+
+    return articles;
+};
+
+
+// Trending Articles API
+const getTrendingArticlesService = async (limit = 5) => {
+
     const articles = await Article.find({
 
-        status: "published"
+        status: "published",
+        isDeleted: false
 
     })
-        .select("title slug summary featuredImage readingTime publishedAt")
 
-        .populate("topic", "title slug")
+        .sort("-views")
 
-        .populate("createdBy", "name email")
+        .limit(limit)
 
-        .sort("-publishedAt")
-
-        .limit(limit);
+        .populate("topic", "title slug");
 
     return articles;
 
@@ -367,5 +477,6 @@ export {
     getFeaturedArticlesService,
     getArticlesByTopicService,
     getRelatedArticlesService,
-    getRecentArticlesService
+    getRecentArticlesService,
+    getTrendingArticlesService
 };

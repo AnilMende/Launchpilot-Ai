@@ -6,6 +6,7 @@ import {
     getFeaturedArticles,
     getRecentArticles,
     getRelatedArticles,
+    getTrendingArticles,
     updateArticle
 } from "../controllers/article.controller.js";
 
@@ -34,6 +35,9 @@ articleRouter.get("/topic/:topicSlug", getArticlesByTopic);
 
 // get related articles
 articleRouter.get("/:slug/related", getRelatedArticles);
+
+// get trending articles
+articleRouter.get("/trending", getTrendingArticles);
 
 // Get article by slug
 articleRouter.get("/:slug", getArticleBySlug);

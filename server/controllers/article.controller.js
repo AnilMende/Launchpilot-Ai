@@ -9,6 +9,7 @@ import {
     getFeaturedArticlesService,
     getRecentArticlesService,
     getRelatedArticlesService,
+    getTrendingArticlesService,
     updateArticleService
 } from "../services/article.service.js";
 import { ARTICLE_STATUS } from "../utils/constants.js";
@@ -98,7 +99,7 @@ const deleteArticle = asyncHandler(async (req, res) => {
 // get featured articles
 const getFeaturedArticles = asyncHandler(async (req, res) => {
 
-    const articles = await getFeaturedArticlesService();
+    const articles = await getFeaturedArticlesService(req.user);
 
     return res.status(200).json(
         new ApiResponse(
@@ -114,7 +115,8 @@ const getArticlesByTopic = asyncHandler(async (req, res) => {
 
     const result = await getArticlesByTopicService(
         req.params.topicSlug,
-        req.query
+        req.query,
+        req.user
     );
 
     return res.status(200).json(
@@ -130,7 +132,8 @@ const getArticlesByTopic = asyncHandler(async (req, res) => {
 // Get Related Artilces
 const getRelatedArticles = asyncHandler(async (req, res) => {
 
-    const result = await getRelatedArticlesService(req.params.slug);
+    const result = await getRelatedArticlesService(req.params.slug, req.user);
+
 
     return res.status(200).json(
         new ApiResponse(
@@ -145,7 +148,7 @@ const getRelatedArticles = asyncHandler(async (req, res) => {
 // get recent articles
 const getRecentArticles = asyncHandler(async (req, res) => {
 
-    const articles = await getRecentArticlesService(req.query);
+    const articles = await getRecentArticlesService(req.query, req.user);
 
     return res.status(200).json(
         new ApiResponse(
@@ -157,7 +160,31 @@ const getRecentArticles = asyncHandler(async (req, res) => {
 
 })
 
+// get trending articles
+const getTrendingArticles = asyncHandler(async (req, res) => {
+
+    const limit = Number(req.query.limit) || 5;
+
+    const articles = await getTrendingArticlesService(limit);
+
+    return res.status(200).json(
+
+        new ApiResponse(
+
+            200,
+
+            { articles },
+
+            "Trending articles fetched successfully"
+
+        )
+
+    );
+
+});
+
 export {
     createArticle, getAllArticles, getArticleBySlug, updateArticle, deleteArticle,
-    getFeaturedArticles, getArticlesByTopic, getRelatedArticles, getRecentArticles
+    getFeaturedArticles, getArticlesByTopic, getRelatedArticles, getRecentArticles,
+    getTrendingArticles
 };

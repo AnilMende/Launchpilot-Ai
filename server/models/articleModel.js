@@ -70,10 +70,24 @@ const articleSchema = new mongoose.Schema({
         maxlength: 70
     },
 
+    views: {
+        type: Number,
+        default: 0
+    },
+
+    lastViewedAt: {
+        type: Date
+    },
+
     seoDescription: {
         type: String,
         trim: true,
         maxlength: 160
+    },
+
+    isDeleted: {
+        type: Boolean,
+        default: false
     },
 
     createdBy: {
