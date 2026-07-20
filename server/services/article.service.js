@@ -333,6 +333,31 @@ const getRelatedArticlesService = async (slug) => {
 
 }
 
+// Get Recent Articles
+// Get Recent Articles
+const getRecentArticlesService = async (query) => {
+
+    const limit = Number(query.limit) || 5;
+
+    const articles = await Article.find({
+
+        status: "published"
+
+    })
+        .select("title slug summary featuredImage readingTime publishedAt")
+
+        .populate("topic", "title slug")
+
+        .populate("createdBy", "name email")
+
+        .sort("-publishedAt")
+
+        .limit(limit);
+
+    return articles;
+
+};
+
 export {
     createArticleService,
     getAllArticlesService,
@@ -341,5 +366,6 @@ export {
     deleteArticleService,
     getFeaturedArticlesService,
     getArticlesByTopicService,
-    getRelatedArticlesService
+    getRelatedArticlesService,
+    getRecentArticlesService
 };
