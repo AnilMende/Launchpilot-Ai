@@ -25,12 +25,11 @@ const createArticleService = async (data, user) => {
         seoDescription
     } = data;
 
+    const slug = generateSlug(title);
+
     const existingArticle = await Article.findOne({
-
-        title,
-
-        isDeleted: false
-
+        slug,
+        isDeleted : false
     });
 
     if (existingArticle) {
@@ -48,7 +47,7 @@ const createArticleService = async (data, user) => {
         throw new ApiError(404, "Topic not found");
     }
 
-    const slug = generateSlug(title);
+    // const slug = generateSlug(title);
 
     const article = await Article.create({
 

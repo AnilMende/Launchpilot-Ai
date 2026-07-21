@@ -6,9 +6,11 @@ import cookieParser from "cookie-parser";
 
 import connectDB from "./config/db.js";
 import { errorHandler } from "./middleware/error.middleware.js";
+
 import authRouter from "./routes/auth.routes.js";
 import topicRouter from "./routes/topic.routes.js";
 import articleRouter from "./routes/article.routes.js";
+import resourceRouter from "./routes/resource.routes.js";
 
 const app = express();
 
@@ -39,6 +41,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/topics", topicRouter);
 
 app.use("/api/articles", articleRouter);
+
+app.use("/api/resources", resourceRouter);
 
 
 app.use(errorHandler);

@@ -13,7 +13,6 @@ const articleSchema = new mongoose.Schema({
     slug: {
         type: String,
         required: true,
-        unique: true,
         lowercase: true,
         trim: true
     },
@@ -109,23 +108,15 @@ const articleSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// indexes
-// articleSchema.index({ slug: 1 });
-
-// articleSchema.index({ topic: 1 });
-
-// articleSchema.index({ status: 1 });
-
-// articleSchema.index({ createdBy: 1 });
-
-// articleSchema.index({ tags: 1 });
-
-// articleSchema.index({
-//     title: "text",
-//     summary: "text",
-//     content: "text"
-// });
-
+articleSchema.index(
+    { slug: 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            isDeleted: false
+        }
+    }
+);
 
 // Reading time middleware
 articleSchema.pre("save", async function () {
