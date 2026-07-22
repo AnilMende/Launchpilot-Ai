@@ -1,0 +1,160 @@
+import { Chat } from "../models/chatModel.js"
+import { Message } from "../models/messageModel.js";
+import { ApiError } from "../utils/ApiError.js";
+
+
+// Create Chat
+const createChatService = async (title, userId) => {
+
+    const chat = await Chat.create({
+        user: userId,
+        title: title || "New Chat"
+    });
+
+    return chat;
+};
+
+// Get user chats
+const getUserChatsService = async (userId) => {
+
+    const chats = await Chat.find({
+        user: userId,
+        isDeleted: false
+
+    }).sort("-updatedAt");
+
+    return chats;
+
+};
+
+// Get chat by ID
+const getChatByIdService = async (chatId, userId) => {
+
+    const chat = await Chat.findOne({
+        _id: chatId,
+        user: userId,
+        isDeleted: false
+    });
+
+    if (!chat) {
+
+        throw new ApiError(
+            404,
+            "Chat not found"
+        )
+    };
+
+    const messages = await Message.find({
+        chat: chatId
+    }).sort("createdAt");
+
+    return {
+        chat,
+        messages
+    }
+};
+
+// Update Chat Title
+const updateChatTitleService = async (chatId, title, userId) => {
+
+    const chat = await Chat.findOne({
+        _id: chatId,
+        user: userId,
+        isDeleted: false
+    });
+
+    if (!chat) {
+        throw new ApiError(
+            404,
+            "Chat not found"
+        );
+    };
+
+    chat.title = title;
+
+    await chat.save();
+
+    return chat;
+
+}
+
+// Delete Chat
+const deleteChatService = async (chatId, userId) => {
+
+    const chat = await Chat.findOne({
+        _id: chatId,
+        user: userId,
+        isDeleted: false
+    });
+
+    if (!chat) {
+        throw new ApiError(
+            404,
+            "Chat not found"
+        );
+    };
+
+    chat.isDeleted = true;
+
+    await chat.save();
+
+    return {};
+}
+
+// Save User Message
+const addUserMessageService = async (chatId, content) => {
+
+    const message = await Message.create({
+        chat: chatId,
+        role: "user",
+        content
+    });
+
+    await Chat.findByIdAndUpdate(
+        chatId,
+        {
+            lastMessage: content
+        }
+    );
+
+    return message;
+}
+
+// Save assistant message
+const addAssistantMessageService = async (chatId, content, sources = [], usage = {}) => {
+
+    const message = await Message.create({
+
+        chat: chatId,
+
+        role: "assistant",
+
+        content,
+
+        sources,
+
+        promptTokens: usage.promptTokens || 0,
+
+        completionTokens: usage.completionTokens || 0,
+
+        totalTokens: usage.totalTokens || 0,
+
+        responseTime: usage.responseTime || 0
+
+    });
+
+    await Chat.findByIdAndUpdate(
+        chatId,
+        {
+            lastMessage: content
+        }
+    );
+
+    return message;
+};
+
+export {
+    createChatService, getUserChatsService, getChatByIdService,
+    updateChatTitleService, deleteChatService, addUserMessageService,
+    addAssistantMessageService
+};

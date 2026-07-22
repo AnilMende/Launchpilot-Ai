@@ -1,6 +1,5 @@
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv";
-dotenv.config();
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -11,6 +10,8 @@ import authRouter from "./routes/auth.routes.js";
 import topicRouter from "./routes/topic.routes.js";
 import articleRouter from "./routes/article.routes.js";
 import resourceRouter from "./routes/resource.routes.js";
+import chatRouter from "./routes/chat.routes.js";
+import aiRouter from "./routes/ai.routes.js";
 
 const app = express();
 
@@ -43,6 +44,10 @@ app.use("/api/topics", topicRouter);
 app.use("/api/articles", articleRouter);
 
 app.use("/api/resources", resourceRouter);
+
+app.use("/api/chat", chatRouter);
+
+app.use("/api/ai", aiRouter);
 
 
 app.use(errorHandler);

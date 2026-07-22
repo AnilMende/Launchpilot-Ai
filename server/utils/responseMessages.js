@@ -23,3 +23,10 @@ export const ARTICLE_MESSAGES = {
     DELETED: "Article deleted successfully",
     FETCHED: "Articles fetched successfully"
 };
+
+export const AI_MESSAGES = {
+
+    RESPONSE_GENERATED:
+        "AI response generated successfully"
+
+};
