@@ -1,4 +1,10 @@
 import { createContext, useEffect, useState } from "react";
+import {
+    login as loginApi,
+    register as registerApi,
+    logout as logoutApi,
+    getCurrentUser
+} from "../services/auth.api.js";
 
 
 export const AuthContext = createContext();
@@ -9,75 +15,99 @@ const AuthProvider = ({ children }) => {
 
     const [loading, setLoading] = useState(true);
 
-    // Fetch logged in user
-    const fetchCurrentUser = async () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    // Check current session
+    const loadUser = async () => {
 
         try {
 
-            const response = await api.get("/auth/me");
+            const response = await getCurrentUser();
 
-            setUser(response.data.data.user);
+            setUser(response.data.user);
+
+            setIsAuthenticated(true);
 
         } catch (error) {
 
             setUser(null);
+            setIsAuthenticated(false);
 
         } finally {
-
             setLoading(false);
-
         }
-
-    };
+    }
 
     useEffect(() => {
 
-        fetchCurrentUser();
+        loadUser();
 
-    }, []);
+    }, [])
 
     // Login
     const login = async (credentials) => {
 
-        const response = await api.post(
-            "/auth/login",
-            credentials
-        );
+        setLoading(true);
 
-        setUser(response.data.data.user);
+        try {
 
-        return response.data;
+            const response = await loginApi(credentials);
+
+            setUser(response.data.user);
+
+            setIsAuthenticated(true);
+
+            return response;
+
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Register
-    const register = async (userData) => {
+    const register = async (data) => {
 
-        const response = await api.post(
-            "/auth/register",
-            userData
-        );
+        setLoading(true);
 
-        return response.data;
+        try {
 
+            const response = await registerApi(data);
+
+            setUser(response.data.user);
+
+            setIsAuthenticated(true);
+
+            return response;
+
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Logout
     const logout = async () => {
 
-        await api.post("/auth/logout");
+        try {
 
-        setUser(null);
+            await logoutApi();
 
+        } finally {
+
+            setUser(null);
+
+            setIsAuthenticated(false);
+        }
     };
 
     const value = {
         user,
         loading,
+        isAuthenticated,
         login,
         register,
         logout,
-        fetchCurrentUser
-    };
+        refreshUser: loadUser,
+    }
 
     return (
         <AuthContext.Provider value={value}>
