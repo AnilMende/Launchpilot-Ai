@@ -1,13 +1,23 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../context/useAuth.js";
+import { Spinner } from "../components/ui";
 
-const isAuthenticated = true;
+const ProtectedRoute = () => {
 
-const ProtectedRoute = ({ children }) => {
+    const {
+        loading,
+        isAuthenticated,
+    } = useAuth();
 
-    if (!isAuthenticated) {
-        return <Navigate to="/login" replace />
+    if (loading) {
+        return <Spinner />;
     }
 
-}
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return <Outlet />;
+};
 
 export default ProtectedRoute;

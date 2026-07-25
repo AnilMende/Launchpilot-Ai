@@ -24,7 +24,7 @@ const AuthProvider = ({ children }) => {
 
             const response = await getCurrentUser();
 
-            setUser(response.data.user);
+            setUser(response.data);
 
             setIsAuthenticated(true);
 

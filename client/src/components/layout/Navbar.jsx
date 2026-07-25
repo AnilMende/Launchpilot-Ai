@@ -1,82 +1,141 @@
-import { Menu, Bell, UserCircle2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import {
+    Menu,
+    Search,
+    LogOut,
+} from "lucide-react";
 
-const pageTitles = {
-    "/dashboard": "Dashboard",
-    "/chat": "AI Chat",
-    "/topics": "Topics",
-    "/articles": "Articles",
-    "/resources": "Resources",
-    "/admin": "Admin Dashboard",
-};
+import { navigation } from "../../constants/navigation.js";
+import { useAuth } from "../../context/useAuth.js";
+import Avatar from "../ui/Avatar.jsx";
+import Button from "../ui/Button.jsx";
+import Input from "../ui/Input.jsx";
 
-const Navbar = () => {
+const Navbar = ({ collapsed, setCollapsed }) => {
 
     const location = useLocation();
 
-    const title = pageTitles[location.pathname] || "LaunchPilot AI";
+    const { user, logout } = useAuth();
+
+    const currentPage = navigation.find(
+        (item) => item.path === location.pathname
+    );
 
     return (
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
+
+        <header
+            className="
+                sticky
+                top-0
+                z-30
+                flex
+                items-center
+                justify-between
+                border-b
+                border-slate-200
+                bg-white
+                px-6
+                py-4
+            "
+        >
 
             {/* Left Section */}
+
             <div className="flex items-center gap-4">
 
-                {/* Mobile Menu Button */}
                 <button
-                    className="lg:hidden p-2 rounded-lg hover:bg-slate-100"
+                    onClick={() => setCollapsed(!collapsed)}
+                    className="
+                        rounded-lg
+                        p-2
+                        transition
+                        hover:bg-slate-100
+                    "
                 >
-                    <Menu size={22} />
+                    <Menu size={20} />
                 </button>
 
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-800">
-                        {title}
+
+                    <h1 className="text-xl font-semibold text-slate-900">
+
+                        {currentPage?.label || "Dashboard"}
+
                     </h1>
 
                     <p className="text-sm text-slate-500">
-                        Welcome back 👋
+
+                        Welcome back!
+
                     </p>
+
                 </div>
 
             </div>
 
+            {/* Center */}
+
+            <div className="hidden w-full max-w-md lg:block">
+
+                <Input
+                    leftIcon={Search}
+                    placeholder="Search..."
+                />
+
+            </div>
+
             {/* Right Section */}
+
             <div className="flex items-center gap-4">
 
-                <button className="relative p-2 rounded-lg hover:bg-slate-100 transition">
+                <div className="hidden text-right md:block">
 
-                    <Bell size={20} />
+                    <p className="font-medium text-slate-900">
 
-                    <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500"></span>
+                        {user?.name}
 
-                </button>
+                    </p>
 
-                <button className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-100 transition">
+                    <p className="text-sm capitalize text-slate-500">
 
-                    <UserCircle2
-                        size={36}
-                        className="text-slate-600"
-                    />
+                        {user?.role}
 
-                    <div className="hidden sm:block text-left">
+                    </p>
 
-                        <p className="text-sm font-medium text-slate-700">
-                            Guest User
-                        </p>
+                </div>
 
-                        <p className="text-xs text-slate-500">
-                            user@example.com
-                        </p>
+                <Avatar
+                    name={user?.name}
+                    size="md"
+                />
 
-                    </div>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={logout}
+                >
 
-                </button>
+                    <LogOut size={18} />
+
+                </Button>
 
             </div>
 
         </header>
+
     );
-}
+
+};
 
 export default Navbar;
+
+// const Navbar = () => {
+
+//     return(
+//         <div>
+//             Navbar
+//         </div>
+//     )
+// }
+
+// export default Navbar;

@@ -11,6 +11,7 @@ import Articles from "../pages/knowledge/Articles.jsx";
 import Resources from "../pages/knowledge/Resources.jsx";
 import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import NotFound from "../pages/NotFound.jsx";
+import DashboardLayout from "../components/layout/DashboardLayout.jsx";
 
 const AppRoutes = () => {
 
@@ -40,42 +41,41 @@ const AppRoutes = () => {
 
                 {/* Protected Layout */}
 
-                <Route
-                    element={
-                        <ProtectedRoute>
-                            <AppLayout />
-                        </ProtectedRoute>
-                    }
-                >
-                    <Route
-                        path="/dashboard"
-                        element={<Dashboard />}
-                    />
+                <Route element={<ProtectedRoute />} >
 
-                    <Route
-                        path="/chat"
-                        element={<Chat />}
-                    />
+                    <Route element={<DashboardLayout />}>
 
-                    <Route
-                        path="/topics"
-                        element={<Topics />}
-                    />
+                        <Route
+                            path="/dashboard"
+                            element={<Dashboard />}
+                        />
 
-                    <Route
-                        path="/articles"
-                        element={<Articles />}
-                    />
+                        <Route
+                            path="/chat"
+                            element={<Chat />}
+                        />
 
-                    <Route
-                        path="/resources"
-                        element={<Resources />}
-                    />
+                        <Route
+                            path="/topics"
+                            element={<Topics />}
+                        />
 
-                    <Route
-                        path="/admin"
-                        element={<AdminDashboard />}
-                    />
+                        <Route
+                            path="/articles"
+                            element={<Articles />}
+                        />
+
+                        <Route
+                            path="/resources"
+                            element={<Resources />}
+                        />
+
+                        <Route
+                            path="/admin"
+                            element={<AdminDashboard />}
+                        />
+                        
+                    </Route>
 
                 </Route>
 
