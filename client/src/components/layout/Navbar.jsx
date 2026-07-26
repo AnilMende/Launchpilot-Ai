@@ -86,38 +86,59 @@ const Navbar = ({ collapsed, setCollapsed }) => {
 
             {/* Right Section */}
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center">
 
-                <div className="hidden text-right md:block">
-
-                    <p className="font-medium text-slate-900">
-
-                        {user?.name}
-
-                    </p>
-
-                    <p className="text-sm capitalize text-slate-500">
-
-                        {user?.role}
-
-                    </p>
-
-                </div>
-
-                <Avatar
-                    name={user?.name}
-                    size="md"
-                />
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={logout}
+                <div
+                    className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white
+                     px-3 py-2 shadow-sm"
                 >
 
-                    <LogOut size={18} />
+                    <Avatar
+                        name={user?.name}
+                        size="lg"
+                    />
 
-                </Button>
+                    <div className="hidden md:block">
+
+                        <p className="text-sm font-semibold text-slate-900">
+                            {user?.name}
+                        </p>
+
+                        <p className="text-xs capitalize text-slate-500">
+                            {user?.role}
+                        </p>
+
+                    </div>
+
+                    <div className="h-8 w-px bg-slate-200" />
+
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={logout}
+                        className="
+                gap-2
+                rounded-lg
+                px-3
+                py-2
+                text-slate-600
+                transition-all
+                duration-200
+                hover:bg-red-50
+                hover:text-red-600
+                cursor-pointer
+            "
+                    >
+
+                        <LogOut size={16} />
+
+                        <span className="hidden lg:inline">
+                            Logout
+                        </span>
+
+                    </Button>
+
+                </div>
 
             </div>
 

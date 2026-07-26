@@ -6,8 +6,8 @@ const Input = ({
     label,
     error,
     helperText,
-    leftIcon,
-    rightIcon,
+    leftIcon: LeftIcon,
+    rightIcon: RightIcon,
     type = "text",
     required = false,
     className = "",
@@ -21,27 +21,26 @@ const Input = ({
     return (
         <div className="w-full">
 
+            {/* Label */}
             {label && (
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-
                     {label}
-
                     {required && (
                         <span className="ml-1 text-red-500">*</span>
                     )}
-
                 </label>
             )}
 
             <div className="relative">
 
                 {/* Left Icon */}
-                {leftIcon && (
+                {LeftIcon && (
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                        {leftIcon}
+                        <LeftIcon size={18} />
                     </div>
                 )}
 
+                {/* Input */}
                 <input
                     type={
                         isPassword
@@ -51,13 +50,10 @@ const Input = ({
                     className={clsx(
                         "w-full rounded-xl border bg-white py-2.5 transition",
                         "focus:outline-none focus:ring-2 focus:ring-indigo-500",
-                        "disabled:bg-slate-100 disabled:cursor-not-allowed",
+                        "disabled:cursor-not-allowed disabled:bg-slate-100",
 
-                        leftIcon ? "pl-10" : "pl-4",
-
-                        isPassword || rightIcon
-                            ? "pr-10"
-                            : "pr-4",
+                        LeftIcon ? "pl-10" : "pl-4",
+                        (isPassword || RightIcon) ? "pr-10" : "pr-4",
 
                         error
                             ? "border-red-500"
@@ -72,9 +68,7 @@ const Input = ({
                 {isPassword && (
                     <button
                         type="button"
-                        onClick={() =>
-                            setShowPassword(!showPassword)
-                        }
+                        onClick={() => setShowPassword((prev) => !prev)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
                     >
                         {showPassword ? (
@@ -86,14 +80,15 @@ const Input = ({
                 )}
 
                 {/* Right Icon */}
-                {!isPassword && rightIcon && (
+                {!isPassword && RightIcon && (
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                        {rightIcon}
+                        <RightIcon size={18} />
                     </div>
                 )}
 
             </div>
 
+            {/* Helper/Error Text */}
             {error ? (
                 <p className="mt-1 text-sm text-red-500">
                     {error}

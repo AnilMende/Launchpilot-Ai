@@ -109,10 +109,9 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
                                 font-medium
                                 transition-all
 
-                                ${
-                                    isActive
-                                        ? "bg-indigo-50 text-indigo-600"
-                                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                                ${isActive
+                                    ? "bg-indigo-50 text-indigo-600"
+                                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                                 }
                                 `
                             }
@@ -145,8 +144,18 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
                     className={`
                         w-full
                         justify-start
-                        ${collapsed ? "px-3" : ""}
-                    `}
+                        gap-2
+                        rounded-xl
+                        px-3
+                        py-2
+                        text-slate-600
+                        transition-all
+                        duration-200
+                        hover:bg-red-50
+                        hover:text-red-600
+                        cursor-pointer
+                        ${collapsed ? "justify-center" : ""}
+                        `}
                 >
 
                     <LogOut
@@ -155,7 +164,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
                     />
 
                     {!collapsed && (
-                        <span className="ml-2">
+                        <span>
                             Logout
                         </span>
                     )}
