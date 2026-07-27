@@ -12,6 +12,7 @@ import articleRouter from "./routes/article.routes.js";
 import resourceRouter from "./routes/resource.routes.js";
 import chatRouter from "./routes/chat.routes.js";
 import aiRouter from "./routes/ai.routes.js";
+import dashboardRouter from "./routes/dashboard.routes.js";
 
 const app = express();
 
@@ -49,6 +50,8 @@ app.use("/api/resources", resourceRouter);
 app.use("/api/chat", chatRouter);
 
 app.use("/api/ai", aiRouter);
+
+app.use("/api/dashboard", dashboardRouter);
 
 
 app.use(errorHandler);
