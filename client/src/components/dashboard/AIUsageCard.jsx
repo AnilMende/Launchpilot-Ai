@@ -1,15 +1,17 @@
 import { Bot, Zap } from "lucide-react";
 
-const AIUsageCard = () => {
+const AIUsageCard = ({ usage }) => {
 
     // Mock Data
-    const tokensUsed = 18240;
-    const monthlyLimit = 100000;
-    const todayChats = 12;
+    const tokensUsed = usage?.tokensUsed ?? 0;
+    const monthlyLimit = usage?.monthlyLimit ?? 0;
+    const todayChats = usage?.todayChats ?? 0;
 
-    const percentage = Math.round(
-        (tokensUsed / monthlyLimit) * 100
-    );
+    const percentage = usage
+        ? Math.round(
+            (usage.tokensUsed / usage.monthlyLimit) * 100
+        )
+        : 0;
 
     return (
 

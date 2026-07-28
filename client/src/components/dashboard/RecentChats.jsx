@@ -1,34 +1,8 @@
 import { MessageSquare, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const recentChats = [
-    {
-        id: 1,
-        title: "Company Registration",
-        preview: "Learned about registering a private limited company.",
-        time: "Today",
-    },
-    {
-        id: 2,
-        title: "Startup Funding",
-        preview: "Explored angel investors and seed funding options.",
-        time: "Yesterday",
-    },
-    {
-        id: 3,
-        title: "GST Registration",
-        preview: "Discussed GST applicability for startups.",
-        time: "2 days ago",
-    },
-    {
-        id: 4,
-        title: "Hiring Employees",
-        preview: "Compared full-time hiring vs freelancers.",
-        time: "Last week",
-    },
-];
 
-const RecentChats = () => {
+const RecentChats = ({ chats }) => {
 
     return (
 
@@ -66,7 +40,7 @@ const RecentChats = () => {
 
             <div>
 
-                {recentChats.map((chat) => (
+                {chats.map((chat) => (
 
                     <Link
                         key={chat.id}

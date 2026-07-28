@@ -1,35 +1,8 @@
 import { ArrowRight, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const popularTopics = [
-    {
-        id: 1,
-        title: "Company Registration",
-        articles: 14,
-    },
-    {
-        id: 2,
-        title: "Startup Funding",
-        articles: 11,
-    },
-    {
-        id: 3,
-        title: "Legal Compliance",
-        articles: 9,
-    },
-    {
-        id: 4,
-        title: "Hiring & HR",
-        articles: 8,
-    },
-    {
-        id: 5,
-        title: "Branding & Marketing",
-        articles: 15,
-    },
-];
 
-const PopularTopics = () => {
+const PopularTopics = ({ topics }) => {
 
     return (
 
@@ -68,7 +41,7 @@ const PopularTopics = () => {
 
             <div>
 
-                {popularTopics.map((topic) => (
+                {topics.map((topic) => (
 
                     <Link
                         key={topic.id}

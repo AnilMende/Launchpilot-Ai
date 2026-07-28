@@ -2,43 +2,44 @@ import {
     MessageSquare,
     BookOpen,
     Newspaper,
-    Link2,
+    FolderOpen,
 } from "lucide-react";
 
 import StatCard from "./StatCard.jsx";
 
-const stats = [
-    {
-        title: "AI Chats",
-        value: 24,
-        icon: MessageSquare,
-        color: "indigo",
-        change: "+8 today",
-    },
-    {
-        title: "Topics",
-        value: 12,
-        icon: BookOpen,
-        color: "emerald",
-        change: "+2 added",
-    },
-    {
-        title: "Articles",
-        value: 86,
-        icon: Newspaper,
-        color: "amber",
-        change: "+5 this week",
-    },
-    {
-        title: "Resources",
-        value: 31,
-        icon: Link2,
-        color: "rose",
-        change: "+1 today",
-    },
-];
+const DashboardStats = ({ stats }) => {
 
-const DashboardStats = () => {
+    const cards = [
+
+        {
+            title: "Topics",
+            value: stats.topics,
+            icon: BookOpen,
+            color: "bg-blue-500",
+        },
+
+        {
+            title: "Articles",
+            value: stats.articles,
+            icon: Newspaper,
+            color: "bg-green-500",
+        },
+
+        {
+            title: "Resources",
+            value: stats.resources,
+            icon: FolderOpen,
+            color: "bg-purple-500",
+        },
+
+        {
+            title: "Chats",
+            value: stats.chats,
+            icon: MessageSquare,
+            color: "bg-orange-500",
+        },
+
+    ];
 
     return (
 
@@ -66,15 +67,14 @@ const DashboardStats = () => {
                 "
             >
 
-                {stats.map((stat) => (
+                {cards.map((card) => (
 
                     <StatCard
-                        key={stat.title}
-                        title={stat.title}
-                        value={stat.value}
-                        icon={stat.icon}
-                        color={stat.color}
-                        change={stat.change}
+                        key={card.title}
+                        title={card.title}
+                        value={card.value}
+                        icon={card.icon}
+                        color={card.color}
                     />
 
                 ))}

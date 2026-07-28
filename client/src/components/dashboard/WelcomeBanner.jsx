@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/useAuth.js";
 import Button from "../ui/Button.jsx";
 
-const WelcomeBanner = () => {
+const WelcomeBanner = ({ userName }) => {
 
     const { user } = useAuth();
 
-    const firstName = user?.name?.split(" ")[0] || "Founder";
+    const firstName = userName?.name?.split(" ")[0] || "Founder";
 
     return (
 
