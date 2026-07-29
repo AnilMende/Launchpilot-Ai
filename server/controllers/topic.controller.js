@@ -44,7 +44,7 @@ const getAllTopics = asyncHandler(async (req, res) => {
 // get topic by slug
 const getTopicBySlug = asyncHandler(async (req, res) => {
 
-    const topic = await getTopicBySlugService(
+    const data = await getTopicBySlugService(
         req.params.slug
     );
 
@@ -52,12 +52,13 @@ const getTopicBySlug = asyncHandler(async (req, res) => {
 
         new ApiResponse(
             200,
-            topic,
+            data,
             "Topic fetched successfully"
         )
 
     );
-})
+
+});
 
 
 // update topic

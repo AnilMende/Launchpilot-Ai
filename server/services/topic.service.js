@@ -1,4 +1,7 @@
 import { Topic } from "../models/topicModel.js"
+import { Article } from "../models/articleModel.js";
+import { Resource } from "../models/resourceModel.js";
+
 import { ApiError } from "../utils/ApiError.js";
 import generateSlug from "../utils/generateSlug.js";
 import getPagination from "../utils/pagination.js";
@@ -69,15 +72,14 @@ const getAllTopicService = async (query) => {
             limit
         }
     };
-    
+
 };
 
 // get topics by slug
 const getTopicBySlugService = async (slug) => {
 
-    const topic = await Topic.findOne({
-        slug
-    }).populate("createdBy", "name email");
+    const topic = await Topic.findOne({ slug })
+        .populate("createdBy", "name email");
 
     if (!topic) {
         throw new ApiError(
@@ -86,7 +88,46 @@ const getTopicBySlugService = async (slug) => {
         );
     }
 
-    return topic;
+    const [articles, resources] = await Promise.all([
+
+        Article.find({
+            topic: topic._id,
+            status: "published",
+            isDeleted: false,
+        })
+            .select(
+                "title slug summary readingTime featuredImage publishedAt"
+            )
+            .sort({ publishedAt: -1 }),
+
+        Resource.find({
+            topic: topic._id,
+            isPublished: true,
+            isDeleted: false,
+        })
+            .select(
+                "title slug type description url thumbnail"
+            )
+
+    ]);
+
+    return {
+
+        topic,
+
+        stats: {
+
+            articleCount: articles.length,
+
+            resourceCount: resources.length,
+
+        },
+
+        articles,
+
+        resources,
+
+    };
 }
 
 // update topic

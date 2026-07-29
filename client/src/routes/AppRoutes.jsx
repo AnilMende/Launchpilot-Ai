@@ -6,12 +6,13 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 import AppLayout from "../components/layout/AppLayout.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Chat from "../pages/chat/Chat.jsx";
-import Topics from "../pages/knowledge/Topics.jsx";
+import Topics from "../pages/topics/Topics.jsx";
 import Articles from "../pages/knowledge/Articles.jsx";
 import Resources from "../pages/knowledge/Resources.jsx";
 import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import NotFound from "../pages/NotFound.jsx";
 import DashboardLayout from "../components/layout/DashboardLayout.jsx";
+import TopicDetails from "../pages/TopicDetails.jsx";
 
 const AppRoutes = () => {
 
@@ -61,6 +62,11 @@ const AppRoutes = () => {
                         />
 
                         <Route
+                            path="/topics/:slug"
+                            element={<TopicDetails />}
+                        />
+
+                        <Route
                             path="/articles"
                             element={<Articles />}
                         />
@@ -74,7 +80,7 @@ const AppRoutes = () => {
                             path="/admin"
                             element={<AdminDashboard />}
                         />
-                        
+
                     </Route>
 
                 </Route>
