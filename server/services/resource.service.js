@@ -1,4 +1,5 @@
 import { Resource } from "../models/resourceModel.js";
+import { Article } from "../models/articleModel.js";
 import { Topic } from "../models/topicModel.js";
 
 import { ApiError } from "../utils/ApiError.js";
@@ -324,6 +325,66 @@ const getResourcesByTopicService = async (
 
 };
 
+// get resource by slug service
+const getResourceBySlugService = async (slug) => {
+
+    const resource = await Resource.findOne({
+        slug,
+        isDeleted: false,
+        isPublished: true,
+    })
+        .populate("topic", "title slug")
+        .populate("createdBy", "name email");
+
+    if (!resource) {
+
+        throw new ApiError(
+            404,
+            "Resource not found"
+        );
+
+    }
+
+    const relatedResources = await Resource.find({
+
+        topic: resource.topic._id,
+
+        _id: {
+            $ne: resource._id
+        },
+
+        isDeleted: false,
+
+        isPublished: true,
+
+    })
+        .select("title slug type description")
+        .limit(3);
+
+    const relatedArticles = await Article.find({
+
+        topic: resource.topic._id,
+
+        isDeleted: false,
+
+        status: "published",
+
+    })
+        .select("title slug summary readingTime")
+        .limit(3);
+
+    return {
+
+        resource,
+
+        relatedResources,
+
+        relatedArticles,
+
+    };
+
+};
+
 
 export {
     createResourceService,
@@ -331,5 +392,6 @@ export {
     getResourceByIdService,
     updateResourceService,
     deleteResourceService,
-    getResourcesByTopicService
+    getResourcesByTopicService,
+    getResourceBySlugService
 }

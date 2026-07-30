@@ -7,12 +7,13 @@ import AppLayout from "../components/layout/AppLayout.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Chat from "../pages/chat/Chat.jsx";
 import Topics from "../pages/topics/Topics.jsx";
-import Articles from "../pages/knowledge/Articles.jsx";
-import Resources from "../pages/knowledge/Resources.jsx";
+import Articles from "../pages/Articles.jsx";
+import ArticleDetails from "../pages/ArticleDetails.jsx";
+import Resources from "../pages/Resources.jsx";
 import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
-import NotFound from "../pages/NotFound.jsx";
 import DashboardLayout from "../components/layout/DashboardLayout.jsx";
 import TopicDetails from "../pages/TopicDetails.jsx";
+import ResourceDetails from "../pages/ResourceDetails.jsx";
 
 const AppRoutes = () => {
 
@@ -72,8 +73,18 @@ const AppRoutes = () => {
                         />
 
                         <Route
+                            path="/articles/:slug"
+                            element={<ArticleDetails />}
+                        />
+
+                        <Route
                             path="/resources"
                             element={<Resources />}
+                        />
+
+                        <Route
+                            path="/resources/:slug"
+                            element={<ResourceDetails />}
                         />
 
                         <Route
@@ -84,12 +95,6 @@ const AppRoutes = () => {
                     </Route>
 
                 </Route>
-
-                {/* 404 */}
-                <Route
-                    path="*"
-                    element={<NotFound />}
-                />
 
             </Routes>
 

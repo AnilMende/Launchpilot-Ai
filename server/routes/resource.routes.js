@@ -8,7 +8,7 @@ import { createResourceSchema, updateResourceSchema } from "../validators/resour
 import { USER_ROLES } from "../utils/constants.js";
 import {
     createResource, deleteResource, getAllResources,
-    getResourceById, getResourcesByTopic, updateResource
+    getResourceById, getResourceBySlug, getResourcesByTopic, updateResource
 } from "../controllers/resource.controller.js";
 
 const resourceRouter = express.Router();
@@ -22,7 +22,10 @@ resourceRouter.get("/", getAllResources);
 resourceRouter.get("/topic/:topicSlug", getResourcesByTopic)
 
 // Get single resource
-resourceRouter.get("/:id", getResourceById);
+resourceRouter.get("/id/:id", getResourceById);
+
+// Get Resource By Slug
+resourceRouter.get("/:slug", getResourceBySlug);
 
 
 // Protected Admin Routes

@@ -1,7 +1,9 @@
 import { Article } from "../models/articleModel.js";
+import { Topic } from "../models/topicModel.js";
+import { Resource } from "../models/resourceModel.js";
+
 import { ApiError } from "../utils/ApiError.js";
 
-import { Topic } from "../models/topicModel.js";
 import generateSlug from "../utils/generateSlug.js";
 
 import getPagination from "../utils/pagination.js";
@@ -29,7 +31,7 @@ const createArticleService = async (data, user) => {
 
     const existingArticle = await Article.findOne({
         slug,
-        isDeleted : false
+        isDeleted: false
     });
 
     if (existingArticle) {
@@ -177,7 +179,31 @@ const getArticleBySlugService = async (slug) => {
         throw new ApiError(404, "Article not found");
     }
 
-    return article;
+    // related articles
+    const relatedArticles = await Article.find({
+        topic: article.topic,
+        _id: { $ne: article._id },
+        status: "published",
+        isDeleted: false,
+    })
+        .limit(3)
+        .select("title slug summary readingTime featuredImage");
+
+    // related resoruces
+    const relatedResources = await Resource.find({
+        topic: article.topic,
+        isPublished: true,
+        isDeleted: false,
+    })
+        .limit(5)
+        .select("title type url");
+
+
+    return {
+        article,
+        relatedArticles,
+        relatedResources,
+    };
 
 };
 

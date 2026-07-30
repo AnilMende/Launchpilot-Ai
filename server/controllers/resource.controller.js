@@ -7,7 +7,8 @@ import {
     getResourceByIdService,
     updateResourceService,
     deleteResourceService,
-    getResourcesByTopicService
+    getResourcesByTopicService,
+    getResourceBySlugService
 } from "../services/resource.service.js";
 
 import { RESOURCE_MESSAGES } from "../utils/resourceMessages.js";
@@ -122,10 +123,29 @@ const getResourcesByTopic = asyncHandler(async (req, res) => {
 
 });
 
+const getResourceBySlug = asyncHandler(async (req, res) => {
+
+    const data = await getResourceBySlugService(
+        req.params.slug
+    );
+
+    return res.status(200).json(
+
+        new ApiResponse(
+            200,
+            data,
+            "Resource fetched successfully"
+        )
+
+    );
+
+});
+
 
 export {
     createResource, getAllResources, getResourceById,
-    updateResource, deleteResource, getResourcesByTopic
+    updateResource, deleteResource, getResourcesByTopic,
+    getResourceBySlug
 };
 
 
