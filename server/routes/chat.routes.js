@@ -3,8 +3,8 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { validate } from "../middleware/validate.middleware.js";
 import { createChatSchema, sendMessageSchema, updateChatTitleSchema } from "../validators/chat.validator.js";
 import {
-    addAssistantMessage, addUserMessage, createChat,
-    deleteChat, getChatById, getUserChats, updateChatTitle
+     createChat, deleteChat, getChatById, 
+     getUserChats, sendMessage, updateChatTitle
 } from "../controllers/chat.controller.js";
 
 
@@ -47,15 +47,14 @@ chatRouter.delete(
 
 // Save User Message
 chatRouter.post(
+
     "/:id/message",
+
     validate(sendMessageSchema),
-    addUserMessage
+
+    sendMessage
+
 );
 
-// Temporary Route (For Testing)
-chatRouter.post(
-    "/:id/assistant",
-    addAssistantMessage
-);
 
 export default chatRouter;

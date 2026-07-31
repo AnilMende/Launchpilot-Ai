@@ -5,7 +5,6 @@ import Register from "../pages/auth/Register.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import AppLayout from "../components/layout/AppLayout.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
-import Chat from "../pages/chat/Chat.jsx";
 import Topics from "../pages/topics/Topics.jsx";
 import Articles from "../pages/Articles.jsx";
 import ArticleDetails from "../pages/ArticleDetails.jsx";
@@ -14,6 +13,7 @@ import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import DashboardLayout from "../components/layout/DashboardLayout.jsx";
 import TopicDetails from "../pages/TopicDetails.jsx";
 import ResourceDetails from "../pages/ResourceDetails.jsx";
+import Chat from "../pages/Chat.jsx";
 
 const AppRoutes = () => {
 
@@ -53,11 +53,6 @@ const AppRoutes = () => {
                         />
 
                         <Route
-                            path="/chat"
-                            element={<Chat />}
-                        />
-
-                        <Route
                             path="/topics"
                             element={<Topics />}
                         />
@@ -85,6 +80,11 @@ const AppRoutes = () => {
                         <Route
                             path="/resources/:slug"
                             element={<ResourceDetails />}
+                        />
+
+                        <Route
+                            path="/chat"
+                            element={<Chat />}
                         />
 
                         <Route

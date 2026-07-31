@@ -153,6 +153,61 @@ const addAssistantMessageService = async (chatId, content, sources = [], usage =
     return message;
 };
 
+// Send Message (User + AI)
+const sendMessageService = async (chatId, content) => {
+
+    // 1. Validate Chat
+    const chat = await Chat.findOne({
+        _id: chatId,
+        isDeleted: false
+    });
+
+    if (!chat) {
+        throw new ApiError(
+            404,
+            "Chat not found"
+        );
+    }
+
+    // 2. Save User Message
+    const userMessage = await addUserMessageService(
+        chatId,
+        content
+    );
+
+    // 3. Build Knowledge Base Context
+    const contextData = await buildKnowledgeContext(content);
+
+    // 4. Generate AI Response
+    const aiResponse = await generateGeminiResponse(
+        content,
+        contextData.context
+    );
+
+    // 5. Save Assistant Message
+    const assistantMessage =
+        await addAssistantMessageService(
+
+            chatId,
+
+            aiResponse.answer,
+
+            contextData.sources,
+
+            aiResponse.usage
+
+        );
+
+    return {
+
+        userMessage,
+
+        assistantMessage
+
+    };
+
+};
+
 export {
     createChatService, getUserChatsService, getChatByIdService,
     updateChatTitleService, deleteChatService, addUserMessageService,

@@ -1,7 +1,8 @@
 import {
-    addAssistantMessageService, addUserMessageService,
+    addUserMessageService,
     createChatService, deleteChatService,
-    getUserChatsService, updateChatTitleService
+    getUserChatsService, updateChatTitleService,
+    getChatByIdService
 } from "../services/chat.service.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
@@ -95,40 +96,34 @@ const deleteChat = asyncHandler(async (req, res) => {
 
 })
 
-// Add user message
-const addUserMessage = asyncHandler(async (req, res) => {
+//send message
+const sendMessage = asyncHandler(async (req, res) => {
 
-    const message = await addUserMessageService(req.params.id, req.body.message);
+    const data = await sendMessageService(
 
-    return res.status(200).json(
-        new ApiResponse(
-            200,
-            message,
-            "Message saved successfully"
-        )
-    );
-
-});
-
-// Add Assistant Message
-const addAssistantMessage = asyncHandler(async (req, res) => {
-
-    const message = await addAssistantMessageService(
         req.params.id,
-        req.body.content,
-        req.body.sources,
-        req.body.usage
+
+        req.body.content
+
     );
 
     return res.status(200).json(
+
         new ApiResponse(
+
             200,
-            message,
-            "Assistant response saved successfully"
+
+            data,
+
+            "Message sent successfully"
+
         )
+
     );
 
 });
+
+
 
 export {
     createChat,
@@ -136,6 +131,5 @@ export {
     getChatById,
     updateChatTitle,
     deleteChat,
-    addUserMessage,
-    addAssistantMessage
+    sendMessage
 };
