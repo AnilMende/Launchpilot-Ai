@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: "https://launch-pilot-ai-iota.vercel.app",
         methods : ["GET", "POST", "PUT", "UPDATE","PATCH", "DELETE"],
         credentials: true,
     })
