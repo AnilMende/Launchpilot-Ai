@@ -14,6 +14,10 @@ import DashboardLayout from "../components/layout/DashboardLayout.jsx";
 import TopicDetails from "../pages/TopicDetails.jsx";
 import ResourceDetails from "../pages/ResourceDetails.jsx";
 import Chat from "../pages/Chat.jsx";
+import AdminTopics from "../pages/admin/AdminTopics.jsx";
+import AdminArticles from "../pages/admin/AdminArticles.jsx";
+import AdminResources from "../pages/admin/AdminResources.jsx";
+import { Navigate } from "react-router-dom";
 
 const AppRoutes = () => {
 
@@ -21,6 +25,11 @@ const AppRoutes = () => {
         <BrowserRouter>
 
             <Routes>
+
+                <Route
+                    path="/"
+                    element={<Navigate to="/login" replace />}
+                />
 
                 {/* Public Routes */}
                 <Route
@@ -90,6 +99,24 @@ const AppRoutes = () => {
                         <Route
                             path="/admin"
                             element={<AdminDashboard />}
+                        />
+
+                        {/* Admin Topics */}
+                        <Route
+                            path="/admin/topics"
+                            element={<AdminTopics />}
+                        />
+
+                        {/* Admin Articles */}
+                        <Route
+                            path="/admin/articles"
+                            element={<AdminArticles />}
+                        />
+
+                        {/* Admin Resources */}
+                        <Route
+                            path="/admin/resources"
+                            element={<AdminResources />}
                         />
 
                     </Route>

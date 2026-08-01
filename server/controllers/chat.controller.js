@@ -2,7 +2,7 @@ import {
     addUserMessageService,
     createChatService, deleteChatService,
     getUserChatsService, updateChatTitleService,
-    getChatByIdService
+    getChatByIdService, sendMessageService
 } from "../services/chat.service.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";

@@ -6,6 +6,9 @@ import { buildSearchRegex } from "../utils/buildSearchRegex.js";
 // Search Topics
 const searchTopics = async (query) => {
 
+    const regex = buildSearchRegex(query);
+    const keywords = regex.split("|");
+
     const topics = await Topic.find({
 
         isPublished: true,
@@ -14,14 +17,14 @@ const searchTopics = async (query) => {
 
             {
                 title: {
-                    $regex: query,
+                    $regex: regex,
                     $options: "i"
                 }
             },
 
             {
                 description: {
-                    $regex: query,
+                    $regex: regex,
                     $options: "i"
                 }
             }
@@ -35,15 +38,25 @@ const searchTopics = async (query) => {
 
             let score = 0;
 
-            // Highest priority
-            if (topic.title.toLowerCase().includes(query.toLowerCase())) {
-                score += 10;
-            }
+            keywords.forEach(keyword => {
 
-            // Lower priority
-            if (topic.description.toLowerCase().includes(query.toLowerCase())) {
-                score += 5;
-            }
+                if (
+                    topic.title
+                        ?.toLowerCase()
+                        .includes(keyword)
+                ) {
+                    score += 10;
+                }
+
+                if (
+                    topic.description
+                        ?.toLowerCase()
+                        .includes(keyword)
+                ) {
+                    score += 5;
+                }
+
+            });
 
             return {
                 ...topic.toObject(),
@@ -61,6 +74,9 @@ const searchTopics = async (query) => {
 // Search Articles
 const searchArticles = async (query) => {
 
+    const regex = buildSearchRegex(query);
+    const keywords = regex.split("|");
+
     const articles = await Article.find({
 
         status: "published",
@@ -71,28 +87,28 @@ const searchArticles = async (query) => {
 
             {
                 title: {
-                    $regex: query,
+                    $regex: regex,
                     $options: "i"
                 }
             },
 
             {
                 summary: {
-                    $regex: query,
+                    $regex: regex,
                     $options: "i"
                 }
             },
 
             {
                 content: {
-                    $regex: query,
+                    $regex: regex,
                     $options: "i"
                 }
             },
 
             {
                 tags: {
-                    $regex: query,
+                    $regex: regex,
                     $options: "i"
                 }
             }
@@ -106,27 +122,41 @@ const searchArticles = async (query) => {
 
             let score = 0;
 
-            // Highest priority
-            if (article.title.toLowerCase().includes(query.toLowerCase())) {
-                score += 20;
-            }
+            keywords.forEach(keyword => {
 
-            // Second priority
-            if (article.tags.some(tag =>
-                tag.toLowerCase().includes(query.toLowerCase())
-            )) {
-                score += 15;
-            }
+                if (
+                    article.title
+                        ?.toLowerCase()
+                        .includes(keyword)
+                ) {
+                    score += 20;
+                }
 
-            // Third priority
-            if (article.summary.toLowerCase().includes(query.toLowerCase())) {
-                score += 10;
-            }
+                if (
+                    article.tags?.some(tag =>
+                        tag.toLowerCase().includes(keyword)
+                    )
+                ) {
+                    score += 15;
+                }
 
-            // Lowest priority
-            if (article.content.toLowerCase().includes(query.toLowerCase())) {
-                score += 5;
-            }
+                if (
+                    article.summary
+                        ?.toLowerCase()
+                        .includes(keyword)
+                ) {
+                    score += 10;
+                }
+
+                if (
+                    article.content
+                        ?.toLowerCase()
+                        .includes(keyword)
+                ) {
+                    score += 5;
+                }
+
+            });
 
             return {
                 ...article.toObject(),
@@ -144,6 +174,9 @@ const searchArticles = async (query) => {
 // Search Resources
 const searchResources = async (query) => {
 
+    const regex = buildSearchRegex(query);
+    const keywords = regex.split("|");
+
     const resources = await Resource.find({
 
         isPublished: true,
@@ -154,21 +187,21 @@ const searchResources = async (query) => {
 
             {
                 title: {
-                    $regex: query,
+                    $regex: regex,
                     $options: "i"
                 }
             },
 
             {
                 description: {
-                    $regex: query,
+                    $regex: regex,
                     $options: "i"
                 }
             },
 
             {
                 tags: {
-                    $regex: query,
+                    $regex: regex,
                     $options: "i"
                 }
             }
@@ -182,22 +215,33 @@ const searchResources = async (query) => {
 
             let score = 0;
 
-            // Highest priority
-            if (resource.title.toLowerCase().includes(query.toLowerCase())) {
-                score += 20;
-            }
+            keywords.forEach(keyword => {
 
-            // Second priority
-            if (resource.tags.some(tag =>
-                tag.toLowerCase().includes(query.toLowerCase())
-            )) {
-                score += 15;
-            }
+                if (
+                    resource.title
+                        ?.toLowerCase()
+                        .includes(keyword)
+                ) {
+                    score += 20;
+                }
 
-            // Third priority
-            if (resource.description.toLowerCase().includes(query.toLowerCase())) {
-                score += 10;
-            }
+                if (
+                    resource.tags?.some(tag =>
+                        tag.toLowerCase().includes(keyword)
+                    )
+                ) {
+                    score += 15;
+                }
+
+                if (
+                    resource.description
+                        ?.toLowerCase()
+                        .includes(keyword)
+                ) {
+                    score += 10;
+                }
+
+            });
 
             return {
                 ...resource.toObject(),
@@ -292,22 +336,44 @@ const searchKnowledgeService = async (question) => {
 
     ]);
 
+    console.log("Topics Found:", topics.length);
+    console.log("Articles Found:", articles.length);
+    console.log("Resources Found:", resources.length);
+
     const context = buildContext(topics, articles, resources);
 
+    const sources = [];
+
+    // Topics
+    topics.forEach(topic => {
+        sources.push({
+            sourceType: "topic",
+            sourceId: topic._id,
+            title: topic.title,
+        });
+    });
+
+    // Articles
+    articles.forEach(article => {
+        sources.push({
+            sourceType: "article",
+            sourceId: article._id,
+            title: article.title,
+        });
+    });
+
+    // Resources
+    resources.forEach(resource => {
+        sources.push({
+            sourceType: "resource",
+            sourceId: resource._id,
+            title: resource.title,
+        });
+    });
+
     return {
-
         context,
-
-        sources: {
-
-            topics,
-
-            articles,
-
-            resources
-
-        }
-
+        sources,
     };
 
 };

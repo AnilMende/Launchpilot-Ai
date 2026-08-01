@@ -1,7 +1,8 @@
 import { Chat } from "../models/chatModel.js"
 import { Message } from "../models/messageModel.js";
 import { ApiError } from "../utils/ApiError.js";
-
+import { generateGeminiResponse } from "./gemini.service.js";
+import { searchKnowledgeService } from "./knowledge.service.js";
 
 // Create Chat
 const createChatService = async (title, userId) => {
@@ -176,7 +177,7 @@ const sendMessageService = async (chatId, content) => {
     );
 
     // 3. Build Knowledge Base Context
-    const contextData = await buildKnowledgeContext(content);
+    const contextData = await searchKnowledgeService(content);
 
     // 4. Generate AI Response
     const aiResponse = await generateGeminiResponse(
@@ -211,5 +212,5 @@ const sendMessageService = async (chatId, content) => {
 export {
     createChatService, getUserChatsService, getChatByIdService,
     updateChatTitleService, deleteChatService, addUserMessageService,
-    addAssistantMessageService
+    addAssistantMessageService, sendMessageService
 };

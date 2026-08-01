@@ -15,7 +15,7 @@ const createChatSchema = Joi.object({
 
 const sendMessageSchema = Joi.object({
 
-    message: Joi.string()
+    content: Joi.string()
         .trim()
         .min(2)
         .max(5000)

@@ -1,4 +1,4 @@
-import api from "../axios.js";
+import api from "../api.js";
 
 
 // Get All Articles

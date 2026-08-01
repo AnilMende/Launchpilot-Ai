@@ -1,61 +1,64 @@
 import { useEffect, useState } from "react";
 
-import {
-    getAdminTopics,
-    createAdminTopic,
-    updateAdminTopic,
-    deleteAdminTopic,
-} from "../../services/admin/adminTopic.api.js";
-
 import AdminLayout from "../../components/admin/AdminLayout.jsx";
 
-import TopicsTable from "../../components/admin/topics/TopicsTable.jsx";
-
-import TopicFormModal from "../../components/admin/topics/TopicFormModal.jsx";
+import ResourcesTable from "../../components/admin/resources/ResourcesTable.jsx";
+import ResourceFormModal from "../../components/admin/resources/ResourceFormModal.jsx";
 
 import ConfirmDeleteModal from "../../components/common/ConfirmDeleteModal.jsx";
 
-const AdminTopics = () => {
+import {
+    getAdminResources,
+    createAdminResource,
+    updateAdminResource,
+    deleteAdminResource,
+} from "../../services/admin/adminResource.api.js";
 
+import { getAdminTopics } from "../../services/admin/adminTopic.api.js";
+
+const AdminResources = () => {
+
+    const [resources, setResources] = useState([]);
     const [topics, setTopics] = useState([]);
 
     const [loading, setLoading] = useState(true);
-
     const [saving, setSaving] = useState(false);
 
     const [open, setOpen] = useState(false);
-
-    const [selectedTopic, setSelectedTopic] =
-        useState(null);
+    const [selectedResource, setSelectedResource] = useState(null);
 
     // Delete Modal State
-    const [deleteOpen, setDeleteOpen] =
-        useState(false);
-
-    const [deleteId, setDeleteId] =
-        useState(null);
-
-    const [deleting, setDeleting] =
-        useState(false);
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
 
-        fetchTopics();
+        fetchData();
 
     }, []);
 
-    const fetchTopics = async () => {
+    const fetchData = async () => {
 
         try {
 
             setLoading(true);
 
-            const response =
-                await getTopics();
+            const [resourceRes, topicRes] = await Promise.all([
 
-            setTopics(
-                response.topics || []
-            );
+                getAdminResources(),
+
+                getAdminTopics(),
+
+            ]);
+
+            setResources(resourceRes.resources || []);
+
+            setTopics(topicRes.topics || []);
+
+        } catch (error) {
+
+            console.error(error);
 
         } finally {
 
@@ -67,15 +70,15 @@ const AdminTopics = () => {
 
     const handleCreate = () => {
 
-        setSelectedTopic(null);
+        setSelectedResource(null);
 
         setOpen(true);
 
     };
 
-    const handleEdit = (topic) => {
+    const handleEdit = (resource) => {
 
-        setSelectedTopic(topic);
+        setSelectedResource(resource);
 
         setOpen(true);
 
@@ -97,13 +100,17 @@ const AdminTopics = () => {
 
             setDeleting(true);
 
-            await deleteTopic(deleteId);
+            await deleteAdminResource(deleteId);
 
             setDeleteOpen(false);
 
             setDeleteId(null);
 
-            fetchTopics();
+            fetchData();
+
+        } catch (error) {
+
+            console.error(error);
 
         } finally {
 
@@ -113,30 +120,34 @@ const AdminTopics = () => {
 
     };
 
-    const handleSubmit = async (form) => {
+    const handleSubmit = async (formData) => {
 
         try {
 
             setSaving(true);
 
-            if (selectedTopic) {
+            if (selectedResource) {
 
-                await updateTopic(
-                    selectedTopic._id,
-                    form
+                await updateAdminResource(
+                    selectedResource._id,
+                    formData
                 );
 
             } else {
 
-                await createTopic(form);
+                await createAdminResource(formData);
 
             }
 
             setOpen(false);
 
-            setSelectedTopic(null);
+            setSelectedResource(null);
 
-            fetchTopics();
+            fetchData();
+
+        } catch (error) {
+
+            console.error(error);
 
         } finally {
 
@@ -156,20 +167,15 @@ const AdminTopics = () => {
 
                     <div>
 
-                        <h1
-                            className="
-                                text-3xl
-                                font-bold
-                            "
-                        >
+                        <h1 className="text-3xl font-bold">
 
-                            Topics
+                            Resources
 
                         </h1>
 
-                        <p className="text-slate-500">
+                        <p className="mt-1 text-slate-500">
 
-                            Manage startup topics
+                            Manage startup resources and tools.
 
                         </p>
 
@@ -184,47 +190,63 @@ const AdminTopics = () => {
                             bg-indigo-600
                             px-5
                             py-3
+                            font-medium
                             text-white
+                            transition
+                            hover:bg-indigo-700
                         "
 
                     >
 
-                        + Add Topic
+                        + Add Resource
 
                     </button>
 
                 </div>
 
-                <TopicsTable
-                    topics={topics}
+                <ResourcesTable
+
+                    resources={resources}
+
                     loading={loading}
+
                     onEdit={handleEdit}
+
                     onDelete={handleDelete}
+
                 />
 
             </div>
 
-            <TopicFormModal
+            <ResourceFormModal
+
                 open={open}
-                topic={selectedTopic}
+
+                resource={selectedResource}
+
+                topics={topics}
+
                 loading={saving}
+
                 onClose={() => {
 
                     setOpen(false);
 
-                    setSelectedTopic(null);
+                    setSelectedResource(null);
 
                 }}
+
                 onSubmit={handleSubmit}
+
             />
 
             <ConfirmDeleteModal
 
                 open={deleteOpen}
 
-                title="Delete Topic"
+                title="Delete Resource"
 
-                message="Are you sure you want to delete this topic? This action cannot be undone."
+                message="Are you sure you want to delete this resource? This action cannot be undone."
 
                 loading={deleting}
 
@@ -246,4 +268,4 @@ const AdminTopics = () => {
 
 };
 
-export default AdminTopics;
+export default AdminResources;
